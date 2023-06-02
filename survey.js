@@ -248,7 +248,7 @@ var Partenero = class {
 
 
   async getAvailableSurvey() {
-    const url = `http://api.partenero.com/v1/surveys/findPublishedSurvey`;
+    const url = `https://api.partenero.com/v1/surveys/findPublishedSurvey`;
     const response = await fetch(url, {
       method: 'POST',
       mode: 'cors',
@@ -260,7 +260,7 @@ var Partenero = class {
         "ambientId": this.token,
         "type": "nps",
         "considerDate": true,
-        "templateId": ""
+        "templateId": this.templateId,
       }),
     });
 
@@ -279,7 +279,7 @@ var Partenero = class {
   }
 
   async userCanAnswer(surveyId, email, clientId) {
-    const url = `http://api.partenero.com/v1/surveys/userCanAnswer`;
+    const url = `https://api.partenero.com/v1/surveys/userCanAnswer`;
     const response = await fetch(url, {
       method: 'POST',
       mode: 'cors',
