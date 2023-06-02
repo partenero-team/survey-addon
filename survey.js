@@ -8,13 +8,14 @@ var Partenero = class {
   survey;
   client_id;
   containerId;
+  api_url;
   user = {};
   styles = {
     close_button: 'cursor: pointer; background-color: white; color: #53585e; text-decoration: none; width: 160px; font-size: .9rem; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; display: inline-block; text-align: center; vertical-align: middle; border: 1px solid #e1eaea; border-radius: .25rem; font-weight: 400; margin-left: 1.0714285714rem!important;',
     error_div: 'color: #721c24; margin-bottom: 1.4285714286rem!important; background-color: #f8d7da; padding: .75rem 1.25rem; border: 1px solid #f5c6cb; border-radius: .25rem;',
     final_message_div: 'color: #0c5460; background-color: #d1ecf1; padding: .25rem 1rem; border: 1px solid #bee5eb; border-radius: .25rem; text-align: center;',
-    float_button: 'cursor: pointer; position: absolute; bottom: 30px; right: 30px; box-shadow: 1px 1px 3px 0.5px #ddd; color: white; background-color: #107EF4; padding: .6rem 1.2rem; border-radius: .25rem; font-size: 20px; transition: .2 ease;',
-    main_div: 'position: absolute; bottom: 30px; right: 30px; width: 800px; max-width: 60vw; height: auto; padding: 1.4285714286rem!important; box-shadow: 0 0 0 1px rgba(53,72,91,.07), 0 2px 2px rgba(0,0,0,.01), 0 4px 4px rgba(0,0,0,.02), 0 10px 8px rgba(0,0,0,.03), 0 15px 15px rgba(0,0,0,.03), 0 30px 30px rgba(0,0,0,.04), 0 70px 65px rgba(0,0,0,.05);',
+    float_button: 'cursor: pointer; position: absolute; bottom: 30px; right: 0; left: 0; margin-left: auto; margin-right: auto; width: 34px; box-shadow: 1px 1px 3px 0.5px #ddd; color: white; background-color: #107EF4; padding: .6rem 1.2rem; border-radius: .25rem; font-size: 20px; transition: .2 ease;',
+    main_div: 'position: absolute; bottom: 30px; right: 0; left: 0; margin-left: auto; margin-right: auto; width: 800px; max-width: 60vw; height: auto; padding: 1.4285714286rem!important; box-shadow: 0 0 0 1px rgba(53,72,91,.07), 0 2px 2px rgba(0,0,0,.01), 0 4px 4px rgba(0,0,0,.02), 0 10px 8px rgba(0,0,0,.03), 0 15px 15px rgba(0,0,0,.03), 0 30px 30px rgba(0,0,0,.04), 0 70px 65px rgba(0,0,0,.05);',
     observation_textarea: 'height: auto; border-color: #e1eaea!important; padding: 1.4285714286rem!important; resize: none; line-height: 1.6; color: #333; display: block; width: 100%; font-size: 1rem; border: 1px solid #ced4da; border-radius: 0.25rem; box-sizing: border-box;',
     question_div: 'padding-top: 1.4285714286rem!important; padding-bottom: 1.4285714286rem!important; box-sizing: border-box;',
     scale_btnGroup: 'position: relative; vertical-align: middle; display: table; width: 100%; table-layout: fixed; margin-bottom: 1.4285714286rem!important;',
@@ -30,14 +31,15 @@ var Partenero = class {
       debug,
       useDefaultStyle,
       containerId,
+      local,
     } = options;
 
     if (!token) {
-      this.#log('token deve ser informado');
+      this.#log('ERROR: token deve ser informado');
     }
 
     if (!templateId) {
-      this.#log('templateId deve ser informado');
+      this.#log('ERROR: templateId deve ser informado');
     }
 
     this.token = token;
@@ -45,6 +47,12 @@ var Partenero = class {
     this.debug = debug || false;
     this.useDefaultStyle = useDefaultStyle || true;
     this.containerId = containerId;
+
+    if (local) {
+      this.api_url = 'http://localhost:3000';
+    } else {
+      this.api_url = 'https://api.partenero.com';
+    }
   }
 
   #log(message) {
@@ -81,7 +89,7 @@ var Partenero = class {
     }
 
     const order = srcElement.getAttribute('question_order');
-    const questionId = srcElement.getAttribute('question_order');
+    const questionId = srcElement.getAttribute('question_id');
     if (!this.answers[order]) {
       this.answers[order] = { questionId };
     }
@@ -91,7 +99,7 @@ var Partenero = class {
   #onTextareaChange(event) {
     const textarea = event.srcElement;
     const order = textarea.getAttribute('question_order');
-    const questionId = textarea.getAttribute('question_order');
+    const questionId = textarea.getAttribute('question_id');
     if (!this.answers[order]) {
       this.answers[order] = { questionId };
     }
@@ -125,10 +133,10 @@ var Partenero = class {
 
   #renderObservation(container, question) {
     const span = document.createElement('span');
-    span.innerHTML = "O que motivou esta nota?";
+    span.innerHTML = "Descrição";
     container.append(span);
     const textarea = document.createElement('textarea');
-    textarea.rows = 5;
+    textarea.rows = 1;
     textarea.style = this.styles.observation_textarea;
     textarea.setAttribute('question_order', question.order);
     textarea.setAttribute('question_id', question._id);
@@ -248,7 +256,7 @@ var Partenero = class {
 
 
   async getAvailableSurvey() {
-    const url = `https://api.partenero.com/v1/surveys/findPublishedSurvey`;
+    const url = `${this.api_url}/v1/surveys/findPublishedSurvey`;
     const response = await fetch(url, {
       method: 'POST',
       mode: 'cors',
@@ -279,7 +287,7 @@ var Partenero = class {
   }
 
   async userCanAnswer(surveyId, email, clientId) {
-    const url = `https://api.partenero.com/v1/surveys/userCanAnswer`;
+    const url = `${this.api_url}/v1/surveys/userCanAnswer`;
     const response = await fetch(url, {
       method: 'POST',
       mode: 'cors',
@@ -303,7 +311,7 @@ var Partenero = class {
   }
 
   async #sendAnswers() {
-    const url = `https://api.partenero.com/v1/surveys/answerSurvey`;
+    const url = `${this.api_url}/v1/surveys/answerSurvey`;
     const response = await fetch(url, {
       method: 'POST',
       mode: 'cors',
@@ -347,9 +355,9 @@ var Partenero = class {
         const order = question.order;
         if (question.required && (!answers[order] || answers[order].value === undefined)) {
           errors.push(`&cross;${question.title} é obrigatório`);
-        } else if (question.useForScore && answers[order].value < 9 && !answers[order].observation) {
+        } /* else if (question.useForScore && answers[order].value < 9 && !answers[order].observation) {
           errors.push(`&cross;${question.title} deve ter uma observação`);
-        }
+        } */
       });
 
       if (errors.length > 0) {
