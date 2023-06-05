@@ -3,12 +3,48 @@
 <head>
   <script type="text/javascript" src="./survey.js"></script>
   <script>
-    window.onload = () => {
-      const partenero = new Partenero('625654d945e5ff97ceca1918', '647a23e4398220f01271f86f', { debug: true });
-      partenero.init({ email: 'jordy@partenero.com', clientId: '02062023' });
+    var partenero;
+    function getInputs() {
+      const map = {}, arr = [];
+      const inputs = ['ambientid', 'templateid', 'clientid', 'email'].forEach(id => {
+        const input = document.getElementById(id);
+        map[id] = input.value;
+        arr.push(input);
+      });
+      return {
+        map,
+        arr
+      };
+    }
+
+    function initializeNPS() {
+      const inputs = getInputs().map;
+      if (partenero) {
+        partenero.destroy();
+      }
+
+      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true });
+      partenero.init({ email: inputs.email, clientId: inputs.clientid });
+    }
+
+    function reset() {
+      const inputs = getInputs().arr;
+      if (partenero) {
+        partenero.destroy();
+      }
+
+      inputs.forEach(input => input.value = '');
     }
   </script>
 </head>
 <body>
-  <h1>Hello World</h1>
+  <h1>Demo NPS</h1>
+  <input id="ambientid" type="text" placeholder="ID do ambiente" value="625654d945e5ff97ceca1918">
+  <input id="templateid" type="text" placeholder="ID do template" value="647a23e4398220f01271f86f">
+  <input id="clientid" type="text" placeholder="ID do cliente" value="02062023">
+  <input id="email" type="text" placeholder="Email do usuário" value="jordy@partenero.com">
+  <br>
+  <br>
+  <button onclick="initializeNPS()">Inicializar NPS</button>
+  <button style="margin-left: 5px;" onclick="reset()">Resetar</button>
 </body>
