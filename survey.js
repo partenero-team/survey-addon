@@ -10,12 +10,13 @@ var Partenero = class {
   containerId;
   api_url;
   user = {};
+  default_main_div = 'position: absolute; bottom: 30px; right: 0; left: 0; margin-left: auto; margin-right: auto; z-index: 9999';
   styles = {
     close_button: 'cursor: pointer; background-color: white; color: #53585e; text-decoration: none; width: 160px; font-size: .9rem; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; display: inline-block; text-align: center; vertical-align: middle; border: 1px solid #e1eaea; border-radius: .25rem; font-weight: 400; margin-left: 1.0714285714rem!important;',
     error_div: 'color: #721c24; margin-bottom: 1.4285714286rem!important; background-color: #f8d7da; padding: .75rem 1.25rem; border: 1px solid #f5c6cb; border-radius: .25rem;',
     final_message_div: 'color: #0c5460; background-color: #d1ecf1; padding: .25rem 1rem; border: 1px solid #bee5eb; border-radius: .25rem; text-align: center;',
-    float_button: 'cursor: pointer; position: absolute; bottom: 30px; right: 0; left: 0; margin-left: auto; margin-right: auto; width: 34px; box-shadow: 1px 1px 3px 0.5px #ddd; color: white; background-color: #107EF4; padding: .6rem 1.2rem; border-radius: .25rem; font-size: 20px; transition: .2 ease;',
-    main_div: 'position: absolute; bottom: 30px; right: 0; left: 0; margin-left: auto; margin-right: auto; width: 800px; max-width: 60vw; height: auto; padding: 1.4285714286rem!important; box-shadow: 0 0 0 1px rgba(53,72,91,.07), 0 2px 2px rgba(0,0,0,.01), 0 4px 4px rgba(0,0,0,.02), 0 10px 8px rgba(0,0,0,.03), 0 15px 15px rgba(0,0,0,.03), 0 30px 30px rgba(0,0,0,.04), 0 70px 65px rgba(0,0,0,.05);',
+    float_button: `cursor: pointer; ${this.default_main_div}; width: 34px; box-shadow: 1px 1px 3px 0.5px #ddd; color: white; background-color: #107EF4; padding: .6rem 1.2rem; border-radius: .25rem; font-size: 20px; transition: .2 ease;`,
+    main_div: `${this.default_main_div}; width: 800px; max-width: 60vw; height: auto; padding: 1.4285714286rem!important; background-color: white; box-shadow: 0 0 0 1px rgba(53,72,91,.07), 0 2px 2px rgba(0,0,0,.01), 0 4px 4px rgba(0,0,0,.02), 0 10px 8px rgba(0,0,0,.03), 0 15px 15px rgba(0,0,0,.03), 0 30px 30px rgba(0,0,0,.04), 0 70px 65px rgba(0,0,0,.05);`,
     observation_textarea: 'height: auto; border-color: #e1eaea!important; padding: 1.4285714286rem!important; resize: none; line-height: 1.6; color: #333; display: block; width: 100%; font-size: 1rem; border: 1px solid #ced4da; border-radius: 0.25rem; box-sizing: border-box;',
     question_div: 'padding-top: 1.4285714286rem!important; padding-bottom: 1.4285714286rem!important; box-sizing: border-box;',
     scale_btnGroup: 'position: relative; vertical-align: middle; display: table; width: 100%; table-layout: fixed; margin-bottom: 1.4285714286rem!important;',
@@ -305,11 +306,11 @@ var Partenero = class {
       if (response.status !== 200) {
         throw new Error(data);
       }
-      this.#log('--- 1 available survey ---');
+      this.#log('--- 1 pesquisa disponível ---');
       this.survey = data;
       return data;
     } catch (e) {
-      this.#log('--- no survey available ---');
+      this.#log('--- nenhuma pesquisa disponível ---');
       return undefined;
     }
   }
@@ -434,7 +435,7 @@ var Partenero = class {
 
     const userHasClosed = this.#checkIfUserClosed(email, survey._id);
     if (userHasClosed) {
-      this.#log('--- Usuário escolheu não responder ---');
+      this.#log(`--- Usuário ${email} escolheu não responder ---`);
       return;
     }
 
