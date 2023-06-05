@@ -61,13 +61,33 @@ var Partenero = class {
     }
   }
 
-  async #resetError() {
+  #saveLocal(key, value) {
+    if (localStorage) {
+      localStorage.setItem(`partenero.surveys.${key}`, value);
+    }
+  }
+
+  #loadLocal(key) {
+    if (localStorage) {
+      return localStorage.getItem(`partenero.surveys.${key}`);
+    }
+    return null;
+  }
+  
+  #checkIfUserClosed(email, mainSurveyId) {
+    const key = `${email}:${mainSurveyId}`;
+    const hide_untill = this.#loadLocal(key);
+    const now = (new Date()).getTime();
+    return now < hide_untill;
+  }
+
+  #resetError() {
     const div = document.getElementById('partenero-survey-error-div');
     div.style.display = 'none';
     div.innerHTML = '';
   }
 
-  async #showError(message) {
+  #showError(message) {
     const div = document.getElementById('partenero-survey-error-div');
     div.style.display = 'block';
     div.innerHTML = message;
@@ -104,6 +124,17 @@ var Partenero = class {
       this.answers[order] = { questionId };
     }
     this.answers[order].observation = textarea.value;
+  }
+
+  #onClose(e) {
+    e.stopPropagation();
+    this.destroy();
+
+    if (this.survey && this.survey._id && this.user && this.user.email) {
+      const today = new Date();
+      const hide_untill = today.setDate(today.getDate() + 1);
+      this.#saveLocal(`${this.user.email}:${this.survey._id}`, hide_untill);
+    }
   }
 
   #renderScaleQuestion(container, question, index) {
@@ -167,10 +198,7 @@ var Partenero = class {
     button.innerHTML = 'Fechar';
     button.style = this.styles.close_button;
     button.id = 'partenero-survey-close-button';
-    button.onclick = (e) => {
-      e.stopPropagation();
-      this.#renderFloatButton();
-    }
+    button.onclick = this.#onClose.bind(this);
     container.append(button);
   }
 
@@ -369,7 +397,7 @@ var Partenero = class {
         await this.#sendAnswers();
         this.#renderFinalMessage();
       } catch (e) {
-        this.#showError('Erro ao enviar respostas.');
+        this.#showError('ERROR: Erro ao enviar respostas.');
       }
     } catch (e) {
       console.error(e);
@@ -394,13 +422,19 @@ var Partenero = class {
       container = document.getElementsByTagName('body')[0];
     }
     if (!container) {
-      this.#log(`could not find element with id ${this.containerId || 'body'}`);
+      this.#log(`ERROR: não foi encontrado elemento com o id ${this.containerId || 'body'}`);
       return;
     }
 
     const survey = await this.getAvailableSurvey();
 
     if (!survey) {
+      return;
+    }
+
+    const userHasClosed = this.#checkIfUserClosed(email, survey._id);
+    if (userHasClosed) {
+      this.#log('--- Usuário escolheu não responder ---');
       return;
     }
 
@@ -413,5 +447,12 @@ var Partenero = class {
     }
 
     this.#renderFloatButton(container);
+  }
+
+  destroy() {
+    let mainDiv = document.getElementById('partenero-survey-main-div');
+    if (mainDiv) {
+      mainDiv.remove();
+    }
   }
 }
