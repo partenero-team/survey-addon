@@ -78,6 +78,7 @@ var Partenero = class {
   #checkIfUserClosed(email, mainSurveyId) {
     const key = `${email}:${mainSurveyId}`;
     const hide_untill = this.#loadLocal(key);
+    if (hide_untill === 'never') return true;
     const now = (new Date()).getTime();
     return now < hide_untill;
   }
@@ -128,12 +129,15 @@ var Partenero = class {
   }
 
   #onClose(e) {
+    const checkbox = document.getElementById('partenero-survey-dontshow-checkbox');
+    const isChecked = checkbox.checked;
+
     e.stopPropagation();
     this.destroy();
 
     if (this.survey && this.survey._id && this.user && this.user.email) {
       const today = new Date();
-      const hide_untill = today.setDate(today.getDate() + 1);
+      const hide_untill = isChecked ? 'never' : today.setDate(today.getDate() + 1);
       this.#saveLocal(`${this.user.email}:${this.survey._id}`, hide_untill);
     }
   }
@@ -181,6 +185,23 @@ var Partenero = class {
     div.id = 'partenero-survey-error-div';
     div.style = this.styles.error_div;
     div.style.display = 'none';
+    container.append(div);
+  }
+
+  #renderDontshowCheckbox(container) {
+    const div = document.createElement('div');
+    const checkbox = document.createElement('input');
+    const label = document.createElement('label');
+    div.style.marginBottom = '.75rem';
+    checkbox.type = 'checkbox';
+    checkbox.id = 'partenero-survey-dontshow-checkbox';
+    checkbox.checked = false;
+    label.setAttribute('for', checkbox.id);
+    label.innerHTML = 'Não mostrar novamente';
+    label.style.paddingBottom = '.5rem';
+    label.style.paddingTop = '.5rem';
+    div.append(checkbox);
+    div.append(label);
     container.append(div);
   }
 
@@ -240,6 +261,7 @@ var Partenero = class {
     });
 
     this.#renderErrorDiv(form);
+    this.#renderDontshowCheckbox(form);
     this.#renderSendButton(form);
     this.#renderCloseButton(form);
   }
