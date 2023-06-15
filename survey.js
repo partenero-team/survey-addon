@@ -10,7 +10,7 @@ var Partenero = class {
   containerId;
   api_url;
   user = {};
-  default_main_div = 'position: float; bottom: 30px; right: 0; left: 0; margin-left: auto; margin-right: auto; z-index: 9999';
+  default_main_div = 'position: fixed; bottom: 30px; right: 0; left: 0; margin-left: auto; margin-right: auto; z-index: 9999';
   styles = {
     close_button: 'cursor: pointer; background-color: white; color: #53585e; text-decoration: none; width: 160px; font-size: .9rem; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; display: inline-block; text-align: center; vertical-align: middle; border: 1px solid #e1eaea; border-radius: .25rem; font-weight: 400; margin-left: 1.0714285714rem!important;',
     error_div: 'color: #721c24; margin-bottom: 1.4285714286rem!important; background-color: #f8d7da; padding: .75rem 1.25rem; border: 1px solid #f5c6cb; border-radius: .25rem;',
@@ -20,7 +20,7 @@ var Partenero = class {
     observation_textarea: 'height: auto; border-color: #e1eaea!important; padding: 1.4285714286rem!important; resize: none; line-height: 1.6; color: #333; display: block; width: 100%; font-size: 1rem; border: 1px solid #ced4da; border-radius: 0.25rem; box-sizing: border-box;',
     question_div: 'padding-top: 1.4285714286rem!important; padding-bottom: 1.4285714286rem!important; box-sizing: border-box;',
     scale_btnGroup: 'position: relative; vertical-align: middle; display: table; width: 100%; table-layout: fixed; margin-bottom: 1.4285714286rem!important;',
-    scale_input: 'box-sizing: border-box; padding: 0; display: none !important; left: 0; top: 0; position: float !important; overflow: visible; margin: 0;',
+    scale_input: 'box-sizing: border-box; padding: 0; display: none !important; left: 0; top: 0; position: fixed !important; overflow: visible; margin: 0;',
     scale_label: 'display: table-cell; width: 1%; float: none; position: relative; cursor: pointer;',
     scale_span__checked: `cursor: pointer; padding-top: .7142857143rem!important; padding-bottom: .7142857143rem!important; font-size: 1.1428571429rem!important; background-color: ${this.primary_color}!important; color: white; border-color: #eee; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 100%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;`,
     scale_span: 'cursor: pointer; padding-top: .7142857143rem!important; padding-bottom: .7142857143rem!important; font-size: 1.1428571429rem!important; background-color: #edf2f8!important; color: #333; border-color: #eee; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 100%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;',
@@ -469,7 +469,8 @@ var Partenero = class {
       return;
     }
 
-    this.#renderFloatButton(container);
+    // this.#renderFloatButton(container);
+    this.#renderSurvey(container);
   }
 
   destroy() {
