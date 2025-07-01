@@ -4,6 +4,10 @@ var Partenero = class {
   useDefaultStyle = true;
   primary_color = '#107EF4';
   primary_light_color = '#4198f6';
+  red_color = '#ff4d4f';
+  yellow_color = '#ffe58f';
+  green_color = '#52c41a';
+  colored_nps = false;
   answers = [];
   survey;
   client_id;
@@ -22,8 +26,12 @@ var Partenero = class {
     scale_btnGroup: 'position: relative; vertical-align: middle; display: table; width: 100%; table-layout: fixed; margin-bottom: 1.4285714286rem!important;',
     scale_input: 'box-sizing: border-box; padding: 0; display: none !important; left: 0; top: 0; position: fixed !important; overflow: visible; margin: 0;',
     scale_label: 'display: table-cell; width: 1%; float: none; position: relative; cursor: pointer;',
-    scale_span__checked: `cursor: pointer; padding-top: .7142857143rem!important; padding-bottom: .7142857143rem!important; font-size: 1.1428571429rem!important; background-color: ${this.primary_color}!important; color: white; border-color: #eee; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 100%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;`,
-    scale_span: 'cursor: pointer; padding-top: .7142857143rem!important; padding-bottom: .7142857143rem!important; font-size: 1.1428571429rem!important; background-color: #edf2f8!important; color: #333; border-color: #eee; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 100%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;',
+    scale_span__checked: `cursor: pointer; font-size: 1.1428571429rem!important; font-weight: 600; letter-spacing: 0.5px; background-color: ${this.primary_color}!important; color: white; border-color: #eee; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 100%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;`,
+    scale_span__checked_colored: `cursor: pointer; font-size: 1.1428571429rem!important; font-weight: 600; letter-spacing: 0.5px; background-color: ${this.primary_color}!important; color: white; border-color: #eee; border-radius: .5rem; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 90%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;`,
+    scale_span_green: `cursor: pointer; font-size: 1.1428571429rem!important; font-weight: 600; letter-spacing: 0.5px; background-color: ${this.green_color}!important; color: white; border-color: #eee; border-radius: .5rem; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 90%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;`,
+    scale_span_red: `cursor: pointer; font-size: 1.1428571429rem!important; font-weight: 600; letter-spacing: 0.5px; background-color: ${this.red_color}!important; color: white; border-color: #eee; border-radius: .5rem; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 90%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;`,
+    scale_span_yellow: `cursor: pointer; font-size: 1.1428571429rem!important; font-weight: 600; letter-spacing: 0.5px; background-color: ${this.yellow_color}!important; color: white; border-color: #eee; border-radius: .5rem; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 90%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;`,
+    scale_span: 'cursor: pointer; font-size: 1.1428571429rem!important; font-weight: 600; letter-spacing: 0.5px; background-color: #edf2f8!important; color: #333; border-color: #eee; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; line-height: 1.4; width: 100%; display: inline-block; box-sizing: border-box; text-align: center; vertical-align: middle;',
     send_button: `cursor: pointer; background-color: ${this.primary_color}; color: #fff; text-decoration: none; width: 160px; font-size: .9rem; padding: .5714285714rem 1.4285714286rem; transition: .2s ease; position: relative; display: inline-block; text-align: center; vertical-align: middle; border: 1px solid transparent; border-radius: .25rem; font-weight: 400;`,
   }
 
@@ -33,6 +41,7 @@ var Partenero = class {
       useDefaultStyle,
       containerId,
       local,
+      colored_nps,
     } = options;
 
     if (!token) {
@@ -48,6 +57,7 @@ var Partenero = class {
     this.debug = debug || false;
     this.useDefaultStyle = useDefaultStyle || true;
     this.containerId = containerId;
+    this.colored_nps = colored_nps || false;
 
     if (local) {
       this.api_url = 'http://localhost:3000';
@@ -104,9 +114,23 @@ var Partenero = class {
     for (let i = 0; i < labels.length; i++) {
       const span = labels[i].lastChild;
       if (span.value == value) {
-        span.style = this.styles.scale_span__checked;
+        if (this.colored_nps) {
+          span.style = this.styles.scale_span__checked_colored;
+        } else {
+          span.style = this.styles.scale_span__checked;
+        }
       } else {
-        span.style = this.styles.scale_span;
+        if (this.colored_nps) {
+          if (span.value <= 6) {
+            span.style = this.styles.scale_span_red;
+          } else if (span.value >= 9) {
+            span.style = this.styles.scale_span_green;
+          } else {
+            span.style = this.styles.scale_span_yellow;
+          }
+        } else {
+          span.style = this.styles.scale_span;
+        }
       }
     }
 
@@ -161,8 +185,19 @@ var Partenero = class {
       label.append(input);
       const span = document.createElement('span');
       span.value = i;
-      span.style = this.styles.scale_span;
       span.innerHTML = i;
+      
+      if (this.colored_nps) {
+        if (i <= 6) {
+          span.style = this.styles.scale_span_red;
+        } else if (i >= 9) {
+          span.style = this.styles.scale_span_green;
+        } else {
+          span.style = this.styles.scale_span_yellow;
+        }
+      } else {
+        span.style = this.styles.scale_span;
+      }
       label.append(span);
     }
   }
@@ -350,7 +385,7 @@ var Partenero = class {
         "ambientId": this.token,
         "mainSurveyId": surveyId,
         "email": email,
-        "clientIntegrationId": clientId,
+        "clientExternalId": clientId,
       }),
     });
 

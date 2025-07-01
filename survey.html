@@ -23,7 +23,7 @@
         partenero.destroy();
       }
 
-      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true });
+      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true, local: true });
       partenero.init({ email: inputs.email, clientId: inputs.clientid });
     }
 
@@ -39,8 +39,8 @@
 </head>
 <body>
   <h1>Demo NPS</h1>
-  <input id="ambientid" type="text" placeholder="ID do ambiente" value="625654d945e5ff97ceca1918">
-  <input id="templateid" type="text" placeholder="ID do template" value="647a23e4398220f01271f86f">
+  <input id="ambientid" type="text" placeholder="ID do ambiente" value="6376ea0ff340b063dcbdb352">
+  <input id="templateid" type="text" placeholder="ID do template" value="686416985f4d9ec13c536097">
   <input id="clientid" type="text" placeholder="ID do cliente" value="02062023">
   <input id="email" type="text" placeholder="Email do usuário" value="jordy@partenero.com">
   <br>
