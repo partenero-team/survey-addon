@@ -372,8 +372,15 @@ var Partenero = class {
     }
   }
 
-  async userCanAnswer(surveyId, email, clientId) {
+  async userCanAnswer(surveyId, email, clientId, externalId) {
     const url = `${this.api_url}/v1/surveys/userCanAnswer`;
+    const bodyObject = {
+      "ambientId": this.token,
+      "mainSurveyId": surveyId,
+      "email": email,
+    };
+    if (clientId) bodyObject.clientId = clientId;
+    else if (externalId) bodyObject.clientExternalId = externalId;
     const response = await fetch(url, {
       method: 'POST',
       mode: 'cors',
@@ -381,12 +388,7 @@ var Partenero = class {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        "ambientId": this.token,
-        "mainSurveyId": surveyId,
-        "email": email,
-        "clientExternalId": clientId,
-      }),
+      body: JSON.stringify(bodyObject),
     });
 
     const data = await response.json();
@@ -468,6 +470,7 @@ var Partenero = class {
   async init(user) {
     const {
       clientId,
+      externalId,
       email
     } = user;
 
@@ -496,7 +499,7 @@ var Partenero = class {
       return;
     }
 
-    const userCanAnswer = await this.userCanAnswer(survey._id, email, clientId);
+    const userCanAnswer = await this.userCanAnswer(survey._id, email, clientId, externalId);
     this.#log(`--- ${email} ${userCanAnswer.message} ---`);
     if (userCanAnswer.canAnswer) {
       this.client_id = userCanAnswer.clientId;

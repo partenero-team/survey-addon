@@ -6,7 +6,7 @@
     var partenero;
     function getInputs() {
       const map = {}, arr = [];
-      const inputs = ['ambientid', 'templateid', 'clientid', 'email'].forEach(id => {
+      const inputs = ['ambientid', 'templateid', 'surveyid', 'clientid', 'externalid', 'email'].forEach(id => {
         const input = document.getElementById(id);
         map[id] = input.value;
         arr.push(input);
@@ -23,8 +23,8 @@
         partenero.destroy();
       }
 
-      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true, local: true });
-      partenero.init({ email: inputs.email, clientId: inputs.clientid });
+      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true });
+      partenero.init({ email: inputs.email, clientId: inputs.clientid, externalId: inputs.externalid });
     }
 
     function reset() {
@@ -41,7 +41,9 @@
   <h1>Demo NPS</h1>
   <input id="ambientid" type="text" placeholder="ID do ambiente" value="689696726b18d3acb0d668d7">
   <input id="templateid" type="text" placeholder="ID do template" value="689698e06b18d3acb0d66acb">
-  <input id="clientid" type="text" placeholder="ID do cliente" value="02062023">
+  <input id="surveyid" type="text" placeholder="ID da pesquisa" value="">
+  <input id="clientid" type="text" placeholder="ID do cliente" value="">
+  <input id="externalid" type="text" placeholder="ID externo" value="02062023">
   <input id="email" type="text" placeholder="Email do usuário" value="jordy@partenero.com">
   <br>
   <br>
