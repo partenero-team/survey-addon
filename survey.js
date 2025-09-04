@@ -204,7 +204,7 @@ var Partenero = class {
 
   #renderObservation(container, question) {
     const span = document.createElement('span');
-    span.innerHTML = "Descrição";
+    span.innerHTML = "Observação";
     container.append(span);
     const textarea = document.createElement('textarea');
     textarea.rows = 1;
@@ -441,9 +441,9 @@ var Partenero = class {
         const order = question.order;
         if (question.required && (!answers[order] || answers[order].value === undefined)) {
           errors.push(`&cross;${question.title} é obrigatório`);
-        } /* else if (question.useForScore && answers[order].value < 9 && !answers[order].observation) {
-          errors.push(`&cross;${question.title} deve ter uma observação`);
-        } */
+        } else if (question.useForScore && answers[order].value < 9 && !answers[order].observation) {
+          errors.push(`&cross;Por favor, nos conte o motivo da sua avaliação para "${question.title}"`);
+        }
       });
 
       if (errors.length > 0) {
