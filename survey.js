@@ -42,6 +42,7 @@ var Partenero = class {
       containerId,
       local,
       colored_nps,
+      sandbox,
     } = options;
 
     if (!token) {
@@ -61,6 +62,8 @@ var Partenero = class {
 
     if (local) {
       this.api_url = 'http://localhost:3000';
+    } else if (sandbox) {
+      this.api_url = 'https://api-test.partenero.com';
     } else {
       this.api_url = 'https://api.partenero.com';
     }
