@@ -2,28 +2,94 @@
 <meta charset="UTF-8">
 <head>
   <script type="text/javascript" src="./survey.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 10px; max-width: 600px; }
+    .form-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: end; }
+    .form-group { flex: 1; }
+    .form-group label { display: block; margin-bottom: 2px; font-size: 12px; font-weight: bold; }
+    .form-group input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 14px; }
+    .group-label { font-size: 11px; color: #666; margin: 8px 0 4px 0; }
+    .error { border-color: #ff0000 !important; }
+    .error-msg { color: #ff0000; font-size: 10px; }
+    button { padding: 8px 16px; margin: 5px 5px 0 0; border: none; border-radius: 3px; cursor: pointer; font-size: 14px; }
+    .btn-primary { background-color: #007bff; color: white; }
+    .btn-secondary { background-color: #6c757d; color: white; }
+    #log { margin-top: 15px; padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 3px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
+  </style>
   <script>
     var partenero;
     function getInputs() {
       const map = {}, arr = [];
-      const inputs = ['ambientid', 'templateid', 'surveyid', 'clientid', 'externalid', 'email'].forEach(id => {
+      ['ambientid', 'templateid', 'surveyid', 'clientid', 'externalid', 'email'].forEach(id => {
         const input = document.getElementById(id);
-        map[id] = input.value;
+        map[id] = input.value.trim();
         arr.push(input);
       });
-      return {
-        map,
-        arr
-      };
+      return { map, arr };
+    }
+
+    function validateInputs() {
+      const inputs = getInputs().map;
+      let isValid = true;
+      
+      // Clear previous errors
+      document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+      document.querySelectorAll('.error-msg').forEach(el => el.remove());
+      
+      // Check if either templateid or surveyid is filled
+      if (!inputs.templateid && !inputs.surveyid) {
+        showError('templateid', 'Either Template ID or Survey ID must be filled');
+        showError('surveyid', 'Either Template ID or Survey ID must be filled');
+        isValid = false;
+      }
+      
+      // Check if either clientid or externalid is filled
+      if (!inputs.clientid && !inputs.externalid) {
+        showError('clientid', 'Either Client ID or External ID must be filled');
+        showError('externalid', 'Either Client ID or External ID must be filled');
+        isValid = false;
+      }
+      
+      // Check required fields
+      if (!inputs.ambientid) {
+        showError('ambientid', 'Ambient ID is required');
+        isValid = false;
+      }
+      
+      if (!inputs.email) {
+        showError('email', 'Email is required');
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+    
+    function showError(inputId, message) {
+      const input = document.getElementById(inputId);
+      input.classList.add('error');
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-msg';
+      errorDiv.textContent = message;
+      input.parentNode.appendChild(errorDiv);
+    }
+
+    function logFunction(message) {
+      const logDiv = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
     }
 
     function initializeNPS() {
+      if (!validateInputs()) return;
+      
       const inputs = getInputs().map;
       if (partenero) {
         partenero.destroy();
       }
 
-      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true });
+      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true, local: true, logFunction: logFunction });
       partenero.init({ email: inputs.email, clientId: inputs.clientid, externalId: inputs.externalid });
     }
 
@@ -32,21 +98,56 @@
       if (partenero) {
         partenero.destroy();
       }
-
-      inputs.forEach(input => input.value = '');
+      
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('error');
+      });
+      document.querySelectorAll('.error-msg').forEach(el => el.remove());
+      document.getElementById('log').innerHTML = '';
     }
   </script>
 </head>
 <body>
-  <h1>Demo NPS</h1>
-  <input id="ambientid" type="text" placeholder="ID do ambiente" value="689696726b18d3acb0d668d7">
-  <input id="templateid" type="text" placeholder="ID do template" value="689698e06b18d3acb0d66acb">
-  <input id="surveyid" type="text" placeholder="ID da pesquisa" value="">
-  <input id="clientid" type="text" placeholder="ID do cliente" value="">
-  <input id="externalid" type="text" placeholder="ID externo" value="02062023">
-  <input id="email" type="text" placeholder="Email do usuário" value="jordy@partenero.com">
-  <br>
-  <br>
-  <button onclick="initializeNPS()">Inicializar NPS</button>
-  <button style="margin-left: 5px;" onclick="reset()">Resetar</button>
+  <h1 style="margin: 0 0 15px 0;">Demo NPS</h1>
+  
+  <div class="form-row">
+    <div class="form-group">
+      <label for="ambientid">Ambient ID *</label>
+      <input id="ambientid" type="text" placeholder="ID do ambiente" value="689696726b18d3acb0d668d7">
+    </div>
+    <div class="form-group">
+      <label for="email">Email *</label>
+      <input id="email" type="text" placeholder="Email do usuário" value="surveys@partenero.com">
+    </div>
+  </div>
+  
+  <div class="group-label">Survey Configuration (one required)</div>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="templateid">Template ID</label>
+      <input id="templateid" type="text" placeholder="ID do template" value="">
+    </div>
+    <div class="form-group">
+      <label for="surveyid">Survey ID</label>
+      <input id="surveyid" type="text" placeholder="ID da pesquisa" value="68bf3c0018b3e27757c63e44">
+    </div>
+  </div>
+  
+  <div class="group-label">Client Identification (one required)</div>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="clientid">Client ID</label>
+      <input id="clientid" type="text" placeholder="ID do cliente" value="6896967a6b18d3acb0d66914">
+    </div>
+    <div class="form-group">
+      <label for="externalid">External ID</label>
+      <input id="externalid" type="text" placeholder="ID externo" value="">
+    </div>
+  </div>
+  
+  <button class="btn-primary" onclick="initializeNPS()">Inicializar NPS</button>
+  <button class="btn-secondary" onclick="reset()">Resetar</button>
+  
+  <div id="log"></div>
 </body>
