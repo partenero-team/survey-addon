@@ -89,7 +89,7 @@
         partenero.destroy();
       }
 
-      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true, local: true, logFunction: logFunction });
+      partenero = new Partenero(inputs.ambientid, inputs.templateid, { debug: true, sandbox: true, logFunction: logFunction });
       partenero.init({ email: inputs.email, clientId: inputs.clientid, externalId: inputs.externalid });
     }
 
