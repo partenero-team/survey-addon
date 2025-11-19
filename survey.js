@@ -43,6 +43,7 @@ var Partenero = class {
       local,
       colored_nps,
       sandbox,
+      logFunction
     } = options;
 
     if (!token) {
@@ -59,6 +60,7 @@ var Partenero = class {
     this.useDefaultStyle = useDefaultStyle || true;
     this.containerId = containerId;
     this.colored_nps = colored_nps || false;
+    this.logFunction = logFunction || null;
 
     if (local) {
       this.api_url = 'http://localhost:3000';
@@ -72,6 +74,9 @@ var Partenero = class {
   #log(message) {
     if (this.debug) {
       console.log('PARTENERO', message);
+    }
+    if (this.logFunction) {
+      this.logFunction(message);
     }
   }
 
