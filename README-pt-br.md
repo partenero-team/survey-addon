@@ -23,15 +23,17 @@ partenero.init({
 ### 3. Parâmetros Obrigatórios
 - **ambientId** (obrigatório): ID do ambiente
 - **email** (obrigatório): Email do usuário
-- **templateId OU surveyId** (um obrigatório): ID do template ou ID da pesquisa
+- **templateId** (obrigatório): ID do template
 - **clientId OU externalId** (um obrigatório): ID do cliente ou ID externo
 
 ### 4. Opções
 ```javascript
 {
-  debug: true,        // Habilitar modo debug
-  sandbox: true,      // Usar ambiente sandbox
-  logFunction: fn     // Função de log personalizada
+  debug: true,           // Habilitar modo debug
+  useDefaultStyle: true, // Aplicar estilos padrão do widget (padrão: true)
+  containerId: 'my-div', // ID do elemento DOM onde o survey será montado (padrão: body)
+  colored_nps: true,     // Colorir escala NPS em vermelho/amarelo/verde (padrão: false)
+  logFunction: fn        // Função de log personalizada
 }
 ```
 
@@ -40,4 +42,4 @@ partenero.init({
 - `partenero.destroy()` - Limpar instância
 
 ### Demo
-Abra `survey.html` para ver um exemplo funcional com validação de formulário.
+Abra `survey.html` localmente para ver um exemplo funcional com validação de formulário.

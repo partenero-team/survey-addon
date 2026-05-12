@@ -23,15 +23,17 @@ partenero.init({
 ### 3. Required Parameters
 - **ambientId** (required): Environment ID
 - **email** (required): User email
-- **templateId OR surveyId** (one required): Template ID or Survey ID
+- **templateId** (required): Template ID
 - **clientId OR externalId** (one required): Client ID or External ID
 
 ### 4. Options
 ```javascript
 {
-  debug: true,        // Enable debug mode
-  local: true,        // Use localhost environment
-  logFunction: fn     // Custom log function
+  debug: true,           // Enable debug mode
+  useDefaultStyle: true, // Apply built-in widget styles (default: true)
+  containerId: 'my-div', // DOM element ID to mount survey into (default: body)
+  colored_nps: true,     // Color NPS scale red/yellow/green (default: false)
+  logFunction: fn        // Custom log function
 }
 ```
 
@@ -40,4 +42,4 @@ partenero.init({
 - `partenero.destroy()` - Clean up instance
 
 ### Demo
-Open `survey.html` to see a working example with form validation.
+Open `survey.html` locally to see a working example with form validation.
